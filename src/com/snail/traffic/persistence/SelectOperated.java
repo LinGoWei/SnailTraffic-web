@@ -6,6 +6,8 @@ import java.sql.ResultSet;
 import java.sql.SQLException;
 import java.util.EnumMap;
 
+import com.snail.traffic.control.ArrayStruct;
+
 /**
  * 查询数据库类
  * 
@@ -67,19 +69,19 @@ public class SelectOperated {
 	 * @return siteline
 	 * 				站点线路枚举map(包括左边，右边)
 	 */
-	public EnumMap<ListEnum,String> getSiteLineSeq(String sitename) {
+	public TwoLongStruct getSiteLineSeq(String sitename) {
 		
-		EnumMap<ListEnum,String> siteline = null;	// 两边站点线路序列字符串
+		TwoLongStruct siteline = new TwoLongStruct();	// 两边站点线路序列字符串
 		
 		try {
 			pre_viewSiteLine.setString(1, sitename);
 			
 			ResultSet rs = pre_viewSiteLine.executeQuery();
 			
-			siteline.put(ListEnum.left, rs.getString(1));
+			rs.next();
+			siteline.put(true, rs.getString(1));	// 保存左边线路集合字符串
+			siteline.put(false, rs.getString(2));	// 保存右边线路集合字符串
 			
-			siteline.put(ListEnum.right, rs.getString(2));
-				
 		} catch (SQLException e) {
 			e.printStackTrace();
 		}  
@@ -94,8 +96,8 @@ public class SelectOperated {
 	 * @return linesite
 	 * 				线路站点枚举map（左边、右边）
 	 */
-	public EnumMap<ListEnum,String> getLineSiteSeq(String lname) {
-		EnumMap<ListEnum,String> linesite = null;	// 获取两边站点线路序列字符串
+	public TwoLongStruct getLineSiteSeq(String lname) {
+		TwoLongStruct linesite = null;	// 获取两边站点线路序列字符串
 		
 		
 	
@@ -117,6 +119,7 @@ public class SelectOperated {
 			
 			ResultSet rs = pre_tableLineName.executeQuery();
 			
+			rs.next();
 			linename = rs.getString(1);
 			
 		} catch (SQLException e) {

@@ -2,10 +2,9 @@ package com.snail.traffic.control;
 
 import java.sql.Connection;
 import java.util.Arrays;
-import java.util.EnumMap;
-import java.util.Map;
 
-import com.snail.traffic.persistence.ListEnum;
+import com.snail.traffic.persistence.SelectOperated;
+import com.snail.traffic.persistence.TwoLongStruct;
 /**
  * 站点查询功能
  * 2.根据站点名,从数据库中获取该站点所经过的所有线路组成的线路数组(注意去行和回行)
@@ -13,13 +12,14 @@ import com.snail.traffic.persistence.ListEnum;
  */
 class SelectBusSite extends SelectBase {
 	
+	SelectOperated seloper = null;
 	/**
 	 * 构造函数
 	 * @param con
 	 * 			数据库连接
 	 */
 	public SelectBusSite(Connection con) {
-		super(con);
+		seloper = new SelectOperated(con);
 	}
 
 	/**
@@ -29,59 +29,35 @@ class SelectBusSite extends SelectBase {
 	 * @return siteinfo
 	 * 				站点信息
 	 */
-	public EnumMap<ListEnum, String[]> query(String input) {
+	public ArrayStruct query(String input) {
 		
-		EnumMap<ListEnum, String[]> siteinfo = null;	// 
+		TwoLongStruct lineSeq = seloper.getSiteLineSeq(input);	// 获取两条长串字符
 		
-		siteinfo.put(ListEnum.left, getLeftLines(input));	// 左边
-		siteinfo.put(ListEnum.right, getLeftLines(input));
+		ArrayStruct siteinfo = new ArrayStruct();	// 声明定义站点信息数组
+		
+		siteinfo.put(true, getLines(lineSeq.get(true)));	// 把左边的线路名数组放到左边
+		siteinfo.put(false, getLines(lineSeq.get(false)));	
 		
 		return siteinfo;
 	}
 	
 	
 	/**
-	 * 返回一个按照站点序号从小到大排列的线路数组数组(左行)
+	 * 返回一个按照站点序号从小到大排列的线路数组数组
 	 * @param sitename
 	 * 				站点名
-	 * @return lineSort(leftline)
+	 * @return lineSort(lines)
 	 * 				排序好的字符串数组
 	 */
-	private String[] getLeftLines(String sitename) {
+	private String[] getLines(String lidseq) {
+		if(lidseq == null)
+			return null;
+		String[] lines = lidseq.split(",");	// 经过站点的左线路
 		
-		String[] leftlines = null;
-		
-		// 数据库处理:
-		// 输入：String sitename
-		// 输出：站点的左行线路集合数组
-		
-		
-		// 判断有无查询的站点信息
-		if(leftlines == null)
-			System.out.println("无左线");
-		
-		return lineSort(leftlines);
-	}
-	
-	/**
-	 *  返回一个按照站点序号从小到大排列的线路数组数组(右行)
-	 * @param sitename
-	 * 				站点名
-	 * @return 
-	 */
-	public String[] getRightLines(String sitename) {
-		String[] rightlines = null;
-		
-		// 数据库处理:
-		// 输入：String sitename
-		// 输出：站点的右行线路集合数组
-		
-		
-		// 判断有无查询的站点信息
-		if(rightlines == null)
-			System.out.println("无右线");
-		
-		return lineSort(rightlines);	
+		for(int i = 0; i < lines.length; i++)
+			lines[i] = seloper.getLineName(Integer.parseInt(lines[i])); // 把线路名替换线路代码字符串
+
+		return lineSort(lines);
 	}
 	
 	/**
@@ -93,19 +69,20 @@ class SelectBusSite extends SelectBase {
 	 */
 	private String[] lineSort(String[] line) {
 		//去除数组中的中文,获取路前面的数字组成的数组
-		int[] temp = new int[line.length];
+//		int[] temp = new int[line.length];
+//		
+//		for(int i = 0; i < line.length; i++) {
+//			line[i] = line[i].replace("路", "");
+//			
+//			temp[i] = Integer.parseInt(line[i]);
+//		}
+//		
+//		Arrays.sort(temp);
+//		
+//		for(int i = 0; i <temp.length; i++)
+//			line[i] = temp[i] + "路";
 		
-		for(int i = 0; i < line.length; i++) {
-			line[i] = line[i].replace("路", "");
-			
-			temp[i] = Integer.parseInt(line[i]);
-		}
-		
-		Arrays.sort(temp);
-		
-		for(int i = 0; i <temp.length; i++)
-			line[i] = temp[i] + "路";
-		
+		Arrays.sort(line);
 		return line;
 	}
 	
