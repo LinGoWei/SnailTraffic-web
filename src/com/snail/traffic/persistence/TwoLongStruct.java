@@ -1,8 +1,9 @@
 package com.snail.traffic.persistence;
 
 public class TwoLongStruct {
-	String leftStr = null;	// ×ó±ß×Ö·û
-	String rightStr = null;	// ÓÒ±ß×Ö·û
+	
+	private String leftStr = null;	// ×ó±ß×Ö·û
+	private String rightStr = null;	// ÓÒ±ß×Ö·û
 	
 	/**
 	 * ±£´æ×Ö·ûÐÅÏ¢

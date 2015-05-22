@@ -6,9 +6,7 @@ package com.snail.traffic.control;
  *
  */
 public class SiteLineClass {
-
 	private String Llidseq = null;	// 左线路集合
-	
 	private String Rlidseq = null;	// 右线路集合
 	
 	/**
@@ -16,8 +14,7 @@ public class SiteLineClass {
 	 * @param lid
 	 * 			线路id
 	 */
-	public void setALlid(Integer lid) {
-			
+	public void setALlid(Integer lid) {	
 		if (this.Llidseq == null)
 			this.Llidseq = "" + lid;
 		else

@@ -4,7 +4,6 @@ import java.sql.Connection;
 import java.sql.PreparedStatement;
 import java.sql.ResultSet;
 import java.sql.SQLException;
-import java.util.EnumMap;
 
 import com.snail.traffic.control.ArrayStruct;
 
@@ -29,13 +28,9 @@ public class SelectOperated {
 	private PreparedStatement pre_tableLineName = null;	// 查询线路名预编译
 	private PreparedStatement pre_tableSiteName = null;	// 查询站点名预编译
 	
-	private String leftSiteLine = null;		// 站点左线路数组
-	private String rightSiteLine = null;	// 站点右线路数组
-	private String leftSites = null;		// 线路左行站点数组
-	private String rightSites = null;		// 线路右行站点数组
+	private PreparedStatement pre_tableLineInfo = null;	// 查询线路信息的预编译	
 	
-	
-	public SelectOperated(Connection con){
+	public SelectOperated(Connection con) {
 		this.con = con;
 		initPreparedStatement();	// 初始化预编译
 	}
@@ -43,7 +38,7 @@ public class SelectOperated {
 	/**
 	 * 初始化预编译语句
 	 */
-	private void initPreparedStatement(){
+	private void initPreparedStatement() {
 		try {
 			String viewSiteLine = "SELECT llidseq, rlidseq FROM　View_SiteLine　 WHERE sname = ?";	
 			String viewLineSite = "SELECT lsidseq, rsidseq FROM　View_LineSite　 WHERE lname = ?";
@@ -51,12 +46,19 @@ public class SelectOperated {
 			String tableLineName = "SELECT lname FROM　LineInfo　 WHERE lid = ?";
 			String tableSiteName = "SELECT sname FROM　SiteInfo　 WHERE sid = ?";
 
+			String tableLineInfo = "SELECT lname, LINTERVAL"
+									+ ", LFIRSTOPEN, LLASTOPEN, LFIRSTCLOSE, LLASTCLOSE"
+									+ ", LPRICE, LCARDPRICE, LCOMPANY"
+									+ " FROM　LineInfo"
+									+ " WHERE lname = ?";
+			
 			pre_viewSiteLine = con.prepareStatement(viewSiteLine);
 			pre_viewLineSite = con.prepareStatement(viewLineSite);
 			
 			pre_tableLineName = con.prepareStatement(tableLineName);
 			pre_tableSiteName = con.prepareStatement(tableSiteName);
-
+			
+			pre_tableLineInfo = con.prepareStatement(tableLineInfo);
 		} catch (SQLException e) {
 			e.printStackTrace();
 		}	
@@ -78,10 +80,10 @@ public class SelectOperated {
 			
 			ResultSet rs = pre_viewSiteLine.executeQuery();
 			
-			rs.next();
-			siteline.put(true, rs.getString(1));	// 保存左边线路集合字符串
-			siteline.put(false, rs.getString(2));	// 保存右边线路集合字符串
-			
+			if(rs.next()) {
+				siteline.put(true, rs.getString(1));	// 保存左边线路集合字符串
+				siteline.put(false, rs.getString(2));	// 保存右边线路集合字符串
+			}
 		} catch (SQLException e) {
 			e.printStackTrace();
 		}  
@@ -89,7 +91,6 @@ public class SelectOperated {
 	}
 	
 	/**
-	 * 优先级为2
 	 * 获取线路站点表左行站点序列数组与右行站点序列数组
 	 * @param lname
 	 * 			线路名
@@ -97,11 +98,47 @@ public class SelectOperated {
 	 * 				线路站点枚举map（左边、右边）
 	 */
 	public TwoLongStruct getLineSiteSeq(String lname) {
-		TwoLongStruct linesite = null;	// 获取两边站点线路序列字符串
 		
+		TwoLongStruct linesite = new TwoLongStruct();	// 获取两边站点线路序列字符串
 		
-	
+		try {
+			pre_viewLineSite.setString(1, lname);
+			
+			ResultSet rs = pre_viewLineSite.executeQuery();
+			
+			if (rs.next()) {
+				linesite.put(true, rs.getString(1));	// 保存左边站点集合字符串
+				linesite.put(false, rs.getString(2));	// 保存右边站点集合字符串
+			}
+		} catch (SQLException e) {
+			e.printStackTrace();
+		}  
 		return linesite;
+	}
+
+	/**
+	 * 获取线路信息
+	 * @param linename
+	 * @return
+	 */
+	public ArrayStruct getLineInfo(String linename) {
+		ArrayStruct lineinfo = new ArrayStruct();
+		
+		try {
+			pre_tableLineInfo.setString(1, linename);	// 设置参数
+			
+			ResultSet rs = pre_tableLineInfo.executeQuery();
+			
+			if(rs.next()) {
+				lineinfo.setLine(rs.getString(1), rs.getString(2));
+				lineinfo.setTime(rs.getString(3), rs.getString(4), rs.getString(5), rs.getString(6));
+				lineinfo.setPrice(rs.getString(7), rs.getString(8));
+				lineinfo.setCompany(rs.getString(9));
+			}
+		} catch (SQLException e) {
+			e.printStackTrace();
+		}
+		return lineinfo;
 	}
 	
 	/**
@@ -119,8 +156,8 @@ public class SelectOperated {
 			
 			ResultSet rs = pre_tableLineName.executeQuery();
 			
-			rs.next();
-			linename = rs.getString(1);
+			if(rs.next())
+				linename = rs.getString(1);
 			
 		} catch (SQLException e) {
 			e.printStackTrace();
@@ -138,16 +175,17 @@ public class SelectOperated {
 	 */
 	public String getSiteName(int sid) {
 		String sitename = null;	// 站点名
-		
-		
+		try {
+			pre_tableSiteName.setInt(1, sid);	// 设置参数
+			
+			ResultSet rs = pre_tableSiteName.executeQuery();
+			
+			if(rs.next())
+				sitename = rs.getString(1);
+			
+		} catch (SQLException e) {
+			e.printStackTrace();
+		}
 		return sitename;
-	}
-	
-	
-	
-	
-	public static void main(String[] args) {
-		// TODO Auto-generated method stub
-
 	}
 }

@@ -6,9 +6,8 @@ import java.sql.SQLException;
 
 public class AdminSiteLineTable extends AdminTableBase {
 	
-	protected static PreparedStatement preupdateL = null;	// 更新数据预编译
-	
-	protected static PreparedStatement preupdateR = null;	// 更新数据预编译
+	protected static PreparedStatement pre_updateL = null;	// 更新数据预编译
+	protected static PreparedStatement pre_updateR = null;	// 更新数据预编译
 	
 	/**
 	 * 构造函数
@@ -16,8 +15,7 @@ public class AdminSiteLineTable extends AdminTableBase {
 	 * 			数据库连接
 	 */
 	public AdminSiteLineTable(Connection con) {
-		this.con = con;	// 数据库连接成员变量初始化
-		
+		this.con = con;	// 数据库连接成员变量初始化		
 		initPreparedStatement();
 	}
 	
@@ -26,25 +24,17 @@ public class AdminSiteLineTable extends AdminTableBase {
 	 */
 	protected void initPreparedStatement() {
 		try {
-			String insertsql = "insert into SITETOLINE values(?,?,?)";
-			
-			String updateLRlidseq = "update SITETOLINE SET LLidseq=?, RLidseq=? WHERE sid = ?";
-			
-			String updateLlidseq = "update SITETOLINE SET LLidseq=? WHERE sid = ?";
-			
-			String updateRlidseq = "update SITETOLINE SET RLidseq=? WHERE sid = ?";
-			
+			String insertsql = "insert into SITETOLINE values(?,?,?)";			
+			String updateLRlidseq = "update SITETOLINE SET LLidseq=?, RLidseq=? WHERE sid = ?";			
+			String updateLlidseq = "update SITETOLINE SET LLidseq=? WHERE sid = ?";			
+			String updateRlidseq = "update SITETOLINE SET RLidseq=? WHERE sid = ?";			
 			String deletesql = "delete FROM SITETOLINE WHERE sid = ?";
 			
-			preinsert = con.prepareStatement(insertsql);
-			
-			preupdate = con.prepareStatement(updateLRlidseq);
-			
-			preupdateL = con.prepareStatement(updateLlidseq);
-			
-			preupdateR = con.prepareStatement(updateRlidseq);
-			
-			predelete = con.prepareStatement(deletesql);
+			pre_insert = con.prepareStatement(insertsql);			
+			pre_update = con.prepareStatement(updateLRlidseq);			
+			pre_updateL = con.prepareStatement(updateLlidseq);			
+			pre_updateR = con.prepareStatement(updateRlidseq);		
+			pre_delete = con.prepareStatement(deletesql);
 		
 		} catch (SQLException e) {
 			e.printStackTrace();
@@ -62,13 +52,13 @@ public class AdminSiteLineTable extends AdminTableBase {
 	 */
 	public void addSiteToLine(int lid, String Llidseq, String Rlidseq) {
 		try {	
-			preinsert.setInt(1, lid);
+			pre_insert.setInt(1, lid);
 			
-			preinsert.setString(2, Llidseq);
+			pre_insert.setString(2, Llidseq);
 			
-			preinsert.setString(3, Rlidseq);
+			pre_insert.setString(3, Rlidseq);
 			
-			preinsert.executeUpdate();
+			pre_insert.executeUpdate();
 		
 		} catch (SQLException e) {
 			e.printStackTrace();

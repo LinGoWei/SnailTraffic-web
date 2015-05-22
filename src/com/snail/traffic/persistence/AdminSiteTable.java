@@ -11,7 +11,6 @@ public class AdminSiteTable extends AdminTableBase {
 	
 	public AdminSiteTable(Connection con) {
 		this.con = con;	// 数据库连接成员变量初始化
-		
 		initPreparedStatement();
 	}
 	
@@ -20,18 +19,13 @@ public class AdminSiteTable extends AdminTableBase {
 	 */
 	protected void initPreparedStatement() {
 		try {
-			String insertsql = "insert into SITEINFO(sid,sname) values(?,?)";
-			
-			String updatesql = "update SITEINFO SET sname = ? WHERE sname = ?";
-			
+			String insertsql = "insert into SITEINFO(sid,sname) values(?,?)";		
+			String updatesql = "update SITEINFO SET sname = ? WHERE sname = ?";		
 			String deletesql = "delete FROM SITEINFO WHERE sname = ?";
 			
-			preinsert = con.prepareStatement(insertsql);
-			
-			preupdate = con.prepareStatement(updatesql);
-			
-			predelete = con.prepareStatement(deletesql);
-		
+			pre_insert = con.prepareStatement(insertsql);	
+			pre_update = con.prepareStatement(updatesql);		
+			pre_delete = con.prepareStatement(deletesql);		
 		} catch (SQLException e) {
 			e.printStackTrace();
 		}
@@ -46,12 +40,9 @@ public class AdminSiteTable extends AdminTableBase {
 	 */
 	public  void addSiteInfo(int sid, String sitename) {
 		try {
-			preinsert.setInt(1, sid);
-		
-			preinsert.setString(2, sitename);
-			
-			preinsert.executeUpdate();
-		
+			pre_insert.setInt(1, sid);	
+			pre_insert.setString(2, sitename);			
+			pre_insert.executeUpdate();	
 		} catch (SQLException e) {
 			e.printStackTrace();
 		}	

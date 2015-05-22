@@ -13,13 +13,9 @@ import java.sql.SQLException;
 public class OracleBase {
 	
 	private String driver = "oracle.jdbc.driver.OracleDriver";	// 驱动名
-	
 	private String url = "jdbc:oracle:thin:@127.0.0.1:1521:test";	// 数据库地址
-	
 	private String user = "g7";		// 用户名
-	
 	private String pass = "123";	// 密码
-	
 	private Connection conn;// 连接
 	
 	/**
@@ -30,8 +26,7 @@ public class OracleBase {
 	 */
 	public OracleBase() {
 		try {
-			Class.forName(driver);
-			
+			Class.forName(driver);	
 			System.out.println("开始尝试连接数据库！");
 			
 		} catch (ClassNotFoundException e1) {
@@ -42,8 +37,7 @@ public class OracleBase {
 			this.conn = DriverManager.getConnection(url, user, pass);
 		} catch (SQLException e) {
 			e.printStackTrace();
-		}
-		
+		}	
 	}
 	
 	/**
@@ -54,7 +48,6 @@ public class OracleBase {
 	public Connection getConnection(){
 		if( conn != null)
 			System.out.println("连接数据库成功！");
-		
 		return conn;
 	}
 }

@@ -16,8 +16,7 @@ public class AdminLineTable extends AdminTableBase {
 	 * 			数据库连接
 	 */
 	public AdminLineTable(Connection con) {
-		this.con = con;	// 数据库连接成员变量初始化
-		
+		this.con = con;	// 数据库连接成员变量初始化		
 		initPreparedStatement();
 	}
 	
@@ -27,30 +26,25 @@ public class AdminLineTable extends AdminTableBase {
 	protected void initPreparedStatement() {
 		try {
 			String insertsql = "insert into LINEINFO values(?,?,?,?,?,?,?,?,?,?)";
-			
+			String deletesql = "delete FROM LINEINFO WHERE sname = ?";
 			String updatesql = "update LINEINFO SET sname=?,linterval=?,lfirstopen=?"
 							+ ",llastopen=?,lfirstclose=?,llastclose=?,lprice=?,lcardprice=?,lcompany=?"
 							+ "WHERE sname = ?";
-			
-			String deletesql = "delete FROM LINEINFO WHERE sname = ?";
-			
-			preinsert = con.prepareStatement(insertsql);
-			
-			preupdate = con.prepareStatement(updatesql);
-			
-			predelete = con.prepareStatement(deletesql);
-		
+
+			pre_insert = con.prepareStatement(insertsql);			
+			pre_update = con.prepareStatement(updatesql);			
+			pre_delete = con.prepareStatement(deletesql);		
 		} catch (SQLException e) {
 			e.printStackTrace();
 		}
 	}
 	
 	/**
-	 * 增加站点信息
-	 * @param sid
-	 * 			站点id
-	 * @param sitename
-	 * 			站点名
+	 * 增加线路信息
+	 * @param lid
+	 * 			线路id
+	 * @param linename
+	 * 			线路名
 	 * @param linterval
 	 * 			线路区间
 	 * @param lfirstopen
@@ -68,8 +62,8 @@ public class AdminLineTable extends AdminTableBase {
 	 * @param lcompany
 	 * 			所属公司
 	 */
-	public void addLineInfo(int sid
-							, String sitename
+	public void addLineInfo(int lid
+							, String linename
 							, String linterval
 							, String lfirstopen
 							, String llastopen
@@ -77,20 +71,19 @@ public class AdminLineTable extends AdminTableBase {
 							, String llastclose
 							, String lprice
 							, String lcardprice
-							, String lcompany){
+							, String lcompany) {
 		try {
-			preinsert.setInt(1, sid);
-			preinsert.setString(2, sitename);
-			preinsert.setString(3, linterval);
-			preinsert.setString(4, lfirstopen);
-			preinsert.setString(5, llastopen);
-			preinsert.setString(6, lfirstclose);
-			preinsert.setString(7, llastclose);
-			preinsert.setString(8, lprice);
-			preinsert.setString(9, lcardprice);
-			preinsert.setString(10, lcompany);
-			preinsert.executeUpdate();
-			
+			pre_insert.setInt(1, lid);
+			pre_insert.setString(2, linename);
+			pre_insert.setString(3, linterval);
+			pre_insert.setString(4, lfirstopen);
+			pre_insert.setString(5, llastopen);
+			pre_insert.setString(6, lfirstclose);
+			pre_insert.setString(7, llastclose);
+			pre_insert.setString(8, lprice);
+			pre_insert.setString(9, lcardprice);
+			pre_insert.setString(10, lcompany);
+			pre_insert.executeUpdate();			
 		} catch (SQLException e) {
 			e.printStackTrace();
 		}	

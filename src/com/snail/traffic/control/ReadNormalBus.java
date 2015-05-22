@@ -12,17 +12,11 @@ import com.snail.traffic.persistence.AdminSiteTable;
  * @describe 读取常规公交线路表格类，从excel文件到数据库
  */
 public class ReadNormalBus extends ReadSheetBase {
-	
 	private static final int SHEETN_NUMBER 	= 0;	// 常规公交表格是表格0
-	
 	private final static int ROW_NUMBER		= 292;  // 表行数是311
-	
 	private final static int COLUMN_NUMBER	= 38; 	// 表列数是38
-	
 	private AdminSiteTable st;
-	
 	private AdminLineTable lt;
-	
 	private AdminLineSiteTable lst;
 	
 	/**
@@ -32,13 +26,9 @@ public class ReadNormalBus extends ReadSheetBase {
 	 */
 	public ReadNormalBus(Connection con, String filename) {
 		super(filename);
-		
-		st = new AdminSiteTable(con);
-		
-		lt = new AdminLineTable(con);
-		
-		lst = new AdminLineSiteTable(con);
-		
+		st 	= new AdminSiteTable(con);
+		lt 	= new AdminLineTable(con);
+		lst = new AdminLineSiteTable(con);	
 	}
 	
 	/**
@@ -51,7 +41,6 @@ public class ReadNormalBus extends ReadSheetBase {
 	public void processBusData (Map<String,Integer> siteMap
 								, Map<String,Integer> lineMap
 								, Map<Integer,SiteLineClass> lidSeqMap) {
-		
 		for (int i = 1; i < ROW_NUMBER; i++)
 			processOneRow(i, siteMap, lineMap, lidSeqMap);	// 处理单条数据
 	}
@@ -74,7 +63,6 @@ public class ReadNormalBus extends ReadSheetBase {
 								, Map<String,Integer> lineMap
 								, Map<Integer,SiteLineClass> lidSeqMap) {
 		NormalBusClass normalbus = getOneRow(i);
-		
 		if (normalbus == null)
 			return;
 		
@@ -84,7 +72,6 @@ public class ReadNormalBus extends ReadSheetBase {
 		lidvalue = processLineInfo(lineMap, normalbus);
 		
 		String leftSidSet = null;	// 左行站点集合
-		
 		String rightSidSet = null;	// 右行站点集合
 		
 		// 循环左行站点序列
@@ -120,14 +107,11 @@ public class ReadNormalBus extends ReadSheetBase {
 								, Map<Integer,SiteLineClass> lidSeqMap
 								, Boolean isleft) {
 		Integer sidvalue = null;	// 站点id值
-		
 		String sidSet = null;	// 站点集合
 		
 		if (siteArr == null)	// 站点数组为null	
-			return null;
-		
-		int sitelen = siteArr.length;	// 站点名数组长度	
-		
+			return null;	
+		int sitelen = siteArr.length;	// 站点名数组长度		
 		String sitestr = null;	// 站点名
 		
 		for (int k = 0; k < sitelen; k++) {
@@ -136,13 +120,10 @@ public class ReadNormalBus extends ReadSheetBase {
 			if (sitestr.equals(""))
 				continue;
 			
-			sidvalue = siteMap.get(sitestr);
-			
+			sidvalue = siteMap.get(sitestr);		
 			if (sidvalue == null) {
-				curSiteNumber++;
-				
-				siteMap.put(sitestr, curSiteNumber);
-				
+				curSiteNumber++;	
+				siteMap.put(sitestr, curSiteNumber);	
 				sidvalue = curSiteNumber;
 						
 				// 站点信息存数据库
@@ -178,7 +159,6 @@ public class ReadNormalBus extends ReadSheetBase {
 			
 			if (isleft)
 				siteline.setALlid(lidvalue);	// 左行线路集合增加一条新线路
-			
 			else
 				siteline.setARlid(lidvalue);	// 右行线路集合增加一条新线路
 				
@@ -202,7 +182,6 @@ public class ReadNormalBus extends ReadSheetBase {
 	 * 			常规公交一条线路
 	 */
 	private NormalBusClass getOneRow(int i) {
-		
 		NormalBusClass normalbus = new NormalBusClass();	// 常规公交临时变量
 		
 		String firstcell = readCell(SHEETN_NUMBER, 0, i);  // firstcell是首个单元格内的字符串
@@ -211,7 +190,7 @@ public class ReadNormalBus extends ReadSheetBase {
     		return null;
     	
 		String columnStr = null;
-	    
+		
 		// 获取一行信息
 		for (int j = 0; j < COLUMN_NUMBER; j++ ) {
 	    	columnStr = readCell(SHEETN_NUMBER, j, i).trim();	
@@ -223,42 +202,30 @@ public class ReadNormalBus extends ReadSheetBase {
 	    	// 判断数据属性
 	    	if (j == 0)
 	    		normalbus.lineName = columnStr;
-	    	
-	    	else if (j==1)
+	    	else if (j == 1)
 	    		normalbus.lineRange = columnStr;
-
 	    	else if (j == 4)
 	    		normalbus.goStops = readCellStr(columnStr);
-	    	
 	    	else if (j == 16)
-	    		normalbus.comeStops = readCellStr(columnStr);
-	    	
+	    		normalbus.comeStops = readCellStr(columnStr);	    	
 	    	else if (j == 28)
 	    		normalbus.firstOpen = columnStr;
-	    	
-	    	else if (j==29)
+	    	else if (j == 29)
 	    		normalbus.lastOpen = columnStr;
-	    	
-	    	else if (j== 30)
+	    	else if (j == 30)
 	    		normalbus.firstClose = columnStr;
-	    	
-	    	else if (j== 31)
+	    	else if (j == 31)
 	    		normalbus.lastClose = columnStr;
-	    	
-	    	else if (j == 32 )
+	    	else if (j == 32)
 	    		normalbus.price = columnStr;
-	    	
 	    	else if (j == 33)
 	    		normalbus.cardPrice = columnStr;
-	    	
-	    	else if (j == 34 )
+	    	else if (j == 34)
 	    		normalbus.company = columnStr;
-	    	
-	    	else if (j == 36 )
+	    	else if (j == 36)
 	    		normalbus.remark = columnStr;
 	    }
 	    curLineNumber++;	// 线路数增加
-		
 	    return normalbus;
 	}
 	
@@ -269,9 +236,7 @@ public class ReadNormalBus extends ReadSheetBase {
 	 * @return Integer
 	 */
 	private Integer processLineInfo(Map<String,Integer> lineMap, NormalBusClass normalbus) {
-		
-		Integer lidvalue = null;
-		
+		Integer lidvalue = null;	// 线路id 
 		lidvalue = lineMap.get(normalbus.lineName);
 		
 		if (lidvalue == null) {

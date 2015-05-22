@@ -2,7 +2,6 @@ package com.snail.traffic.control;
 
 import java.io.File;
 import java.io.IOException;
-import java.sql.Connection;
 import java.util.Map;
 
 import jxl.Sheet;
@@ -16,7 +15,7 @@ import jxl.read.biff.BiffException;
  * @introduction 阅读Excel文件中表格的基类
  */
 public class ReadSheetBase {
-	private Workbook book_;		//文件句柄
+	private Workbook book_;		// 文件句柄
 	protected int curLineNumber	= 0;	// 当前线路条数
 	protected int curSiteNumber	= 0;	// 当前站点数
 	
@@ -42,7 +41,7 @@ public class ReadSheetBase {
 	 */
 	public void processBusData(Map<String, Integer> siteMap
 								, Map<String, Integer> lineMap
-								, Map<Integer,SiteLineClass> lidSeqMap){}
+								, Map<Integer,SiteLineClass> lidSeqMap) {}
 	
 	/**
 	 * 读第 sheetN个表格中的第 x列，第 y行

@@ -1,5 +1,6 @@
  package com.snail.traffic.control;
 
+
 abstract class SelectBase {
 	
 	/**
