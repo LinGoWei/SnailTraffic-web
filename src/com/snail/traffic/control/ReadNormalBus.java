@@ -5,6 +5,7 @@ import java.util.Map;
 
 import com.snail.traffic.persistence.AdminLineSiteTable;
 import com.snail.traffic.persistence.AdminLineTable;
+import com.snail.traffic.persistence.AdminRelationTableBase;
 import com.snail.traffic.persistence.AdminSiteTable;
 
 /**
@@ -17,7 +18,7 @@ public class ReadNormalBus extends ReadSheetBase {
 	private final static int COLUMN_NUMBER	= 38; 	// 表列数是38
 	private AdminSiteTable st;
 	private AdminLineTable lt;
-	private AdminLineSiteTable lst;
+	private AdminRelationTableBase lst;
 	
 	/**
 	 * 构造函数
@@ -81,7 +82,7 @@ public class ReadNormalBus extends ReadSheetBase {
 		rightSidSet = processOneWay(normalbus.comeStops, lidvalue, siteMap, lidSeqMap, false);
 		
 		// 线路站点表存数据库
-		lst.addLineToSite(lidvalue, leftSidSet, rightSidSet);
+		lst.addKeyToValue(lidvalue, leftSidSet, rightSidSet);
 	}
 	
 	/**

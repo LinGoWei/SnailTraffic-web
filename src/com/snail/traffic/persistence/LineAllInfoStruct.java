@@ -1,8 +1,12 @@
-package com.snail.traffic.control;
+package com.snail.traffic.persistence;
 
-public class ArrayStruct {
-	private String [] leftStrs 	= null;	// 左行数组
-	private String [] rightStrs	= null;	// 右行数组
+/**
+ * 线路的所有信息结构体
+ * @author weiliu
+ *
+ */
+public class LineAllInfoStruct extends InfoStruct{
+	
 	public String lineName		= null;	// 线路名
 	public String lineRange		= null; // 线路区间
 	public String firstOpen		= null; // 首站开班
@@ -13,33 +17,6 @@ public class ArrayStruct {
 	public String cardPrice		= null; // 刷卡票价
 	public String company		= null; // 所属公司
 	public String remark		= null;	// 备注
-	
-	/**
-	 * 保存数组信息
-	 * @param left
-	 * 			是否为左边数组
-	 * @param str
-	 * 			字符串数组
-	 */
-	public void put(Boolean left, String[] str) {
-		if(left)
-			this.leftStrs = str;
-		else
-			this.rightStrs = str;
-	}
-	
-	/**
-	 * 获取数组信息
-	 * @param left
-	 * 			是否为左边数组
-	 * @return 字符串数组
-	 */
-	public String[] get(Boolean left) {
-		if(left)
-			return leftStrs;
-		else
-			return rightStrs;
-	}
 	
 	/**
 	 * 设置线路区间

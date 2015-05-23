@@ -50,7 +50,7 @@ public class Administration {
 			SiteLineClass val = (SiteLineClass)entry.getValue();
 			
 			// 加入数据库站点线路表中
-			slt.addSiteToLine(key, val.getALlid(), val.getARlid());	
+			slt.addKeyToValue(key, val.getALlid(), val.getARlid());	
 		}
 		System.out.print("导入完成");
 	}

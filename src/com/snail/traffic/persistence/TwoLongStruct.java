@@ -31,4 +31,6 @@ public class TwoLongStruct {
 		else
 			return rightStr;
 	}
+	
+	
 }

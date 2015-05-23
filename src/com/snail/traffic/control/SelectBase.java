@@ -1,5 +1,7 @@
  package com.snail.traffic.control;
 
+import com.snail.traffic.persistence.InfoStruct;
+
 
 abstract class SelectBase {
 	
@@ -10,5 +12,5 @@ abstract class SelectBase {
 	 * 			ÊäÈë×Ö·û´®
 	 * @return
 	 */
-	public abstract ArrayStruct query(String input);
+	public abstract InfoStruct query(String input);
 }
