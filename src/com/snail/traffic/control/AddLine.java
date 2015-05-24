@@ -168,15 +168,19 @@ public class AddLine {
 		String right = null;
 		int sid = 0;	// 站点id
 		int temp = 0;	// 上一个站点id
+		int runleft;
 		
-		for (int i = 0; i < array.length; i++) {					
-			
+		for (int i = 0; i < array.length; i++) {						
 			sid = adsite.getId(array[i]);	//获取sid
 			if (temp != 0) {
 				/**
 				 * 时间和距离暂时设为0，后期需要前端提供
 				 */
-				adnextsite.addKeyToValue(temp,lid,1,sid,0,0);
+				if (isleft)
+					runleft = 1;
+				else
+					runleft = 0;
+				adnextsite.addKeyToValue(temp,lid,runleft,sid,0,0);
 			}
 			if (sidseq.equals(""))
 				sidseq = sid + "";
