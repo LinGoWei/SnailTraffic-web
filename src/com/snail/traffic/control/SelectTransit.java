@@ -18,10 +18,11 @@ public class SelectTransit {
 	/**
 	 * 换乘查询
 	 * 首先检查是否直达
+	 * 检查是否存在一次换乘
 	 * @param start
 	 * 			起始上车站点
 	 * @param end
-	 * 			下车站点
+	 * 			最终下车站点
 	 * @return
 	 */
 	public Vector<TransitSchemeStruct> query(String start, String end) {
