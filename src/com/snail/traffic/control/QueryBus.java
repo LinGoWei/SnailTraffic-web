@@ -46,7 +46,7 @@ public class QueryBus {
 	public static void main(String[] args) {
 		 
 	        String ss = "解放";  
-	        while(ss != "q"){//读取输入流中的字节直到流的末尾返回1  
+	        while(ss != "q"){ //读取输入流中的字节直到流的末尾返回1  
                 //数组缓冲  
 	        	   
                 byte[] b = new byte[1024];  

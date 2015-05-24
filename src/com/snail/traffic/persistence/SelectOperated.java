@@ -71,7 +71,7 @@ public class SelectOperated {
 	}
 	
 	/**
-	 * 获取线路站点表左行站点序列数组与右行站点序列数组
+	 * 获取线路站点表左行站点序列与右行站点序列
 	 * @param lname
 	 * 			线路名
 	 * @return linesite
