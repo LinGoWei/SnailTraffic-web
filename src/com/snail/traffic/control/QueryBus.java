@@ -43,6 +43,12 @@ public class QueryBus {
 		return selectSite.fuzzySearch(input.trim());
 	}
 	
+	// ªª≥À≤È—Ø
+	public Vector<TransitSchemeStruct> queryTransit(String start, String end) {
+		SelectTransit selectTran = new SelectTransit(con);
+		return selectTran.query(start, end);
+	}
+	
 	public static void main(String[] args) {
 		 
 	        String ss = "Ω‚∑≈";  
