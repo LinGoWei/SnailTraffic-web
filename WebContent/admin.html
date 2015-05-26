@@ -86,16 +86,17 @@
     <div class="panel panel-primary">
         <div class="panel-heading">上传数据表文件</div>
         <div class="panel-body">
-            <form class="form-horizontal" action="upload.jsp" enctype="multipart/form-data" method="post">
+            <form class="form-horizontal" action="upload.jsp" enctype="multipart/form-data" method="post" target="upload-call">
                 <div class="row">
                     <div class="col-xs-10">
                         <label class="sr-only" for="select-file">选择文件</label>
                         <input class="form-control" id="select-file" type="file" name="upload-filename" value=""/>
                     </div>
                     <div class="col-xs-2 text-right">
-                        <button class="btn btn-primary" type="submit">上传</button>
+                        <button class="btn btn-primary" id="button-upload" type="submit">上传</button>
                     </div>
                 </div>
+                <iframe name="upload-call" style="display: none"></iframe>
             </form>
             <div class="progress margin-top-fix">
                 <div class="progress-bar progress-bar-striped progress-bar-warning" id="upload-progress"
@@ -128,9 +129,7 @@
                 <div class="form-group row">
                     <div class="col-xs-3">
                         <div class="panel panel-default">
-                            <div class="panel-heading">
-                                选择添加车站
-                            </div>
+                            <div class="panel-heading">选择添加车站</div>
                             <div class="panel-body">
                                 <label class="sr-only" for="new-line-search">搜索站点名称</label>
                                 <input class="form-control" id="new-line-search" type="text" placeholder="输入站点名以添加站点到列表" autocomplete="off">

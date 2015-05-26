@@ -63,6 +63,17 @@ function showBusStationResult(json) {
     for (var i = 0; i < emptyItems; i++) {
         rightList.append('<li>&nbsp;</li>');
     }
+    
+    var geoCoder = new BMap.Geocoder();
+	var geoPoint = new BMap.Point();
+	geoCoder.getPoint('武汉市' + json.title + '站', function (point) {
+		if (point) {
+			map.centerAndZoom(point, 16);
+			map.addOverlay(new BMap.Marker(point));
+		} else {
+			map.clearOverlays();
+		}
+	});
 }
 
 function showBusQueryNoResult() {
