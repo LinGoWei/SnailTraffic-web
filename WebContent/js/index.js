@@ -133,7 +133,7 @@ $(document).ready(function () {
     	if (text.length > 0) {
     		ajax('vaguesearch.jsp'
     			, 'POST'
-    			, {'pattern' : text}
+    			, {'pattern': text, 'amount': '10'}
     			, function (ret) {
     				emptyTextHint();
     				
@@ -170,7 +170,6 @@ $(document).ready(function () {
             , function (ret) {
                 var type = parseInt(ret.type);
                 clearResult();
-                //alert(ret.type);
                 switch (type) {
 			    case 1: // Exchange
 			        setSidebarVisibility(true);
