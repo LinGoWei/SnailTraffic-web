@@ -155,7 +155,7 @@ public class SelectOperated {
 	 */
 	public Vector<DirectAccessStruct> getDirectAccessSites(String startSite) {
 		Vector<DirectAccessStruct> directSites = new Vector<DirectAccessStruct>();// 可直达站点向量
-		DirectAccessStruct newElement = new DirectAccessStruct();
+		DirectAccessStruct newElement;
 		try {
 			pre_DirectAccess.setString(1, startSite);
 			pre_DirectAccess.registerOutParameter(2, OracleTypes.CURSOR);
@@ -163,17 +163,21 @@ public class SelectOperated {
 			rs = ((OracleCallableStatement)pre_DirectAccess).getCursor(2);
 			
 			while (rs.next()) {
+				newElement = new DirectAccessStruct();
 				newElement.sname = rs.getString("SNAME");
 				newElement.lname = rs.getString("LNAME");
 				newElement.runLeft = rs.getInt("RUNLEFT");
 				newElement.runTime = rs.getInt("RUNTIME");
 				newElement.distance = rs.getInt("DISTANCE");
+				// System.out.println(newElement.sname);
 				directSites.add(newElement);
-				System.out.println(newElement.sname);
+				
 			}
 		} catch (SQLException e) {
 			e.printStackTrace();
 		}
+//		for(int i = 0; i < directSites.size(); i++)
+//			System.out.println(directSites.get(i).sname);
 		return directSites;
 	}
 	
@@ -205,8 +209,8 @@ public class SelectOperated {
 		OracleBase oracle = new OracleBase();
 		Connection con = oracle.getConnection();
 		SelectOperated aa = new SelectOperated(con);
-		// aa.getDirectAccessSites("建设大道双墩");
-		aa.get_Be_DirectAccessSites("建设大道双墩");
+		aa.getDirectAccessSites("建设大道双墩");
+		// aa.get_Be_DirectAccessSites("建设大道双墩");
 	}
 	
 }
