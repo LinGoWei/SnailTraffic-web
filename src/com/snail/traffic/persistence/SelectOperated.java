@@ -6,6 +6,10 @@ import java.sql.PreparedStatement;
 import java.sql.ResultSet;
 import java.sql.SQLException;
 import java.sql.Types;
+import java.util.Vector;
+
+import oracle.jdbc.OracleCallableStatement;
+import oracle.jdbc.internal.OracleTypes;
 
 import com.snail.traffic.control.TransitSToEStruct;
 
@@ -26,6 +30,10 @@ public class SelectOperated {
 	
 	private PreparedStatement pre_viewSiteLine = null;	// 查询站点线路视图预编译
 	private PreparedStatement pre_viewLineSite = null;	// 查询线路站点视图预编译
+	private CallableStatement pre_DirectAccess = null;	// 直达站点查询预编译
+	private CallableStatement pre_BeDirectAccess = null;	// 直达站点查询预编译
+	
+	private ResultSet rs = null;
 	
 	public SelectOperated(Connection con) {
 		this.con = con;
@@ -42,6 +50,8 @@ public class SelectOperated {
 
 			pre_viewSiteLine = con.prepareStatement(viewSiteLine);
 			pre_viewLineSite = con.prepareStatement(viewLineSite);	
+			pre_DirectAccess = con.prepareCall("BEGIN DIRECTACCESS(?, ?); END;");
+			pre_BeDirectAccess = con.prepareCall("BEGIN BEDIRECTACCESS(?, ?); END;");
 			
 		} catch (SQLException e) {
 			e.printStackTrace();
@@ -135,4 +145,68 @@ public class SelectOperated {
 		ste.lineName = line;
 		return ste;
 	}
+	
+	/**
+	 * 获取起始站点的可直达站点向量
+	 * @param startSite
+	 * 				起始站点
+	 * @return directSites
+	 * 				可直达站点的信息向量
+	 */
+	public Vector<DirectAccessStruct> getDirectAccessSites(String startSite) {
+		Vector<DirectAccessStruct> directSites = new Vector<DirectAccessStruct>();// 可直达站点向量
+		DirectAccessStruct newElement = new DirectAccessStruct();
+		try {
+			pre_DirectAccess.setString(1, startSite);
+			pre_DirectAccess.registerOutParameter(2, OracleTypes.CURSOR);
+			pre_DirectAccess.execute();
+			rs = ((OracleCallableStatement)pre_DirectAccess).getCursor(2);
+			
+			while (rs.next()) {
+				newElement.sname = rs.getString("SNAME");
+				newElement.lname = rs.getString("LNAME");
+				newElement.runLeft = rs.getInt("RUNLEFT");
+				newElement.runTime = rs.getInt("RUNTIME");
+				newElement.distance = rs.getInt("DISTANCE");
+				directSites.add(newElement);
+				System.out.println(newElement.sname);
+			}
+		} catch (SQLException e) {
+			e.printStackTrace();
+		}
+		return directSites;
+	}
+	
+	public Vector<BeDirectAccessStruct> get_Be_DirectAccessSites(String endSite) {
+		Vector<BeDirectAccessStruct> directSites = new Vector<BeDirectAccessStruct>();// 可直达站点向量
+		BeDirectAccessStruct newElement = new BeDirectAccessStruct();
+		
+		try {
+			pre_DirectAccess.setString(1, endSite);
+			pre_DirectAccess.registerOutParameter(2, OracleTypes.CURSOR);
+			pre_DirectAccess.execute();
+			rs = ((OracleCallableStatement)pre_DirectAccess).getCursor(2);
+			
+			while (rs.next()) {
+				newElement.sname = rs.getString("SNAME");
+				newElement.lname = rs.getString("LNAME");
+				newElement.runLeft = rs.getInt("RUNLEFT");
+				directSites.add(newElement);
+				System.out.println(newElement.sname);
+			}
+		} catch (SQLException e) {
+			e.printStackTrace();
+		}
+		return directSites;
+	}
+	
+	
+	public static void main(String[] args) {
+		OracleBase oracle = new OracleBase();
+		Connection con = oracle.getConnection();
+		SelectOperated aa = new SelectOperated(con);
+		// aa.getDirectAccessSites("建设大道双墩");
+		aa.get_Be_DirectAccessSites("建设大道双墩");
+	}
+	
 }
