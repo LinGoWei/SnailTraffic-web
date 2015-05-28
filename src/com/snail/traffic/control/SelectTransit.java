@@ -2,6 +2,7 @@ package com.snail.traffic.control;
 
 import java.sql.Connection;
 import java.util.HashSet;
+import java.util.Iterator;
 import java.util.LinkedList;
 import java.util.List;
 import java.util.Set;
@@ -67,6 +68,7 @@ public class SelectTransit {
 			return null;
 		
 		Vector<TransitSchemeStruct> schemes = new Vector<TransitSchemeStruct>();// 方案向量
+		
 		DirectVectorBase directV = new DirectVector();
 		DirectVectorBase be_directV = new Be_DirectVector();
 		
@@ -77,18 +79,21 @@ public class SelectTransit {
 		directV.relateVector = this.selOper.getDirectAccessSites(start);
 		
 		// 若方案数大于3个，即可返回换乘查询结果
-		if (through(schemes, directV, end) >= 3)
+		if (through(schemes, directV, end) >= 3) {
 			return schemes;
-		
-		
-		
-		be_directV.relateSite = end;
-		
-		be_directV.relateVector = this.selOper.get_Be_DirectAccessSites(end);
-		
-		
-		
-		return schemes;
+		}
+		// 若获取直达方案后，方案数小于3个
+		else {
+			int len = directV.relateVector.size();
+			be_directV.relateSite = end;
+			be_directV.relateVector = this.selOper.get_Be_DirectAccessSites(end, len);
+			Set<String> setIntersection = intersection(directV.getSiteSetFromVector(), be_directV.getSiteSetFromVector());
+			
+			if (onceTransfer(schemes, directV, be_directV, setIntersection) >= 3)
+				return schemes;
+			else 
+				return schemes;
+		}
 	}
 	
 	/**
@@ -99,30 +104,123 @@ public class SelectTransit {
 	 * 			起始站点向量
 	 * @param end
 	 * 			目标站点
+	 * @return size
+	 * 			方案数
 	 */
 	private int through(Vector<TransitSchemeStruct> allScheme, DirectVectorBase direct, String end) {
-		Vector<TransitSToEStruct> transitVecter = direct.getVectorTo(end); // 获得直达方案
-		TransitSchemeStruct scheme = null;	// 换乘方案元素
+		TimePriorityQueue transitVecter = direct.getVectorTo(end); // 获得直达方案
+		TransitSchemeStruct newScheme = null;	// 换乘方案元素
+		TransitSToEStruct stoe = null;
 		
 		int size = transitVecter.size();
-		// 直达乘车方案就是一个方案
+		// 一个直达乘车方案就是一个方案
 		for (int i = 0; i < size; i++) {
-			scheme = new TransitSchemeStruct();
-			scheme.transitLine.add(transitVecter.get(i));
-			scheme.time = transitVecter.get(i).time;
-			scheme.distance = transitVecter.get(i).distance;
-			allScheme.add(scheme); // 把元素加入到向量中
+			newScheme = new TransitSchemeStruct();
+			stoe = transitVecter.poll();	// 获得优先队列中的时间最优元素
+			newScheme.transitLine.add(stoe);
+			newScheme.time = stoe.time;
+			newScheme.distance = stoe.distance;
+			allScheme.add(newScheme); // 把元素加入到向量中
 		}
-		System.out.print(allScheme.size());
+		System.out.println("直达：" + allScheme.size());
 		return allScheme.size();
 	}
 	
 
+	/**
+	 * 对两个集合求交集(准确)
+	 * @param setA
+	 * 			A集合
+	 * @param setB
+	 * 			B集合
+	 * @return
+	 */
+	private Set<String> intersection(Set<String> setA, Set<String> setB) {
+//		String ss = "";
+//		Iterator<String> iterAa = setA.iterator();
+//        while (iterAa.hasNext()) {
+//            ss = iterAa.next();
+//            System.out.println(ss);
+//        }
+//        System.out.println("++++++++++++++++++++++");
+//		Iterator<String> iterB = setB.iterator();
+//        while (iterB.hasNext()) {
+//            ss = iterB.next();
+//            System.out.println(ss);
+//        }
+//        System.out.println("===========");
+		Set<String> setIntersection = new HashSet<String>();
+        String s = "";
+        Iterator<String> iterA = setA.iterator();
+        while (iterA.hasNext()) {
+            s = iterA.next();
+            
+            if(setB.contains(s))
+                setIntersection.add(s);
+        }
+        
+        return setIntersection;
+	}
+	
+
+	/**
+	 * 一次换乘查询
+	 * @param allScheme
+	 * 			所有方案
+	 * @param direct
+	 * 			起始站点直达站点
+	 * @param be_direct
+	 * 			终止站点被直达站点
+	 * @param interset
+	 * 			交集（可换乘站点）
+	 * @return 当前方案数
+	 */
+	private int onceTransfer(Vector<TransitSchemeStruct> allScheme
+							, DirectVectorBase direct
+							, DirectVectorBase be_direct
+							, Set<String> interset) {
+		
+		TimePriorityQueue frontTransit 	= null;	// 前半段公交的临时变量
+		TimePriorityQueue lastTransit 	= null;	// 后半段公交的临时变量
+		TransitSchemeStruct newScheme 	= null;	// 新的方案
+		TransitSToEStruct frontstoe 	= null;	// 前段乘车段
+		TransitSToEStruct laststoe 		= null;	// 后段乘车段
+		
+		for (String s: interset) {
+			System.out.println(s);
+			
+			frontTransit = direct.getVectorTo(s);
+			lastTransit = be_direct.getVectorTo(s);
+			frontstoe = frontTransit.poll();
+			laststoe = lastTransit.poll();
+			
+			System.out.println(frontstoe.lineName);
+			System.out.println(laststoe.lineName);
+			
+			// 构造新元素
+			newScheme = new TransitSchemeStruct();
+			newScheme.transitLine.add(frontstoe);
+			newScheme.transitLine.add(laststoe);
+			newScheme.time = frontstoe.time + laststoe.time;
+			newScheme.distance = frontstoe.distance + laststoe.distance;
+			
+			
+			//System.out.println(newScheme.transitLine.get(0).lineName + "," + newScheme.transitLine.get(1).lineName);
+			
+			allScheme.add(newScheme);
+		}
+		System.out.println("直达+一次换乘" + allScheme.size());
+		return allScheme.size();
+	}
+	
+	
+	
+	
 	public static void main(String[] args) {
 		OracleBase oracle = new OracleBase();
 		Connection con = oracle.getConnection();
 		SelectTransit a = new SelectTransit(con);
-		a.query("建设大道双墩", "建设大道新合村");
+		a.query("建设大道双墩", "汉黄路岱家山");
 	}
 	
     

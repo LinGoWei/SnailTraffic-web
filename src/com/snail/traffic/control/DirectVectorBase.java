@@ -13,11 +13,11 @@ public abstract class DirectVectorBase {
 	/**
 	 *  从向量中获取到达sitename的方案
 	 */
-	public abstract Vector<TransitSToEStruct> getVectorTo(String name); // 从向量中获取到达sitename的方案
+	public abstract TimePriorityQueue getVectorTo(String name); // 从向量中获取到达sitename的方案
 	
 	/**
 	 * 把向量转换成集合
 	 */
-	public abstract Set<String> getSetFromVector();	// 把向量转换成集合
+	public abstract Set<String> getSiteSetFromVector();	// 把向量转换成集合
 	
 }

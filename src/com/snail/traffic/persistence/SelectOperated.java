@@ -51,7 +51,7 @@ public class SelectOperated {
 			pre_viewSiteLine = con.prepareStatement(viewSiteLine);
 			pre_viewLineSite = con.prepareStatement(viewLineSite);	
 			pre_DirectAccess = con.prepareCall("BEGIN DIRECTACCESS(?, ?); END;");
-			pre_BeDirectAccess = con.prepareCall("BEGIN BEDIRECTACCESS(?, ?); END;");
+			pre_BeDirectAccess = con.prepareCall("BEGIN BEDIRECTACCESS(?, ?, ?); END;");
 			
 		} catch (SQLException e) {
 			e.printStackTrace();
@@ -181,26 +181,40 @@ public class SelectOperated {
 		return directSites;
 	}
 	
-	public Vector<BeDirectAccessStruct> get_Be_DirectAccessSites(String endSite) {
+	/**
+	 * 获取终止站点的可被直达站点向量
+	 * 注意：由于数据库中的临时表是会话级的，从连接成功开始保留数据，直到数据连接断开，
+	 * 因此临时表中包含上一次的站点信息，
+	 * 因此，需要用上一次的站点数来排除之前的内容
+	 * @param endSite
+	 * @param direct_len
+	 * @return
+	 */
+	public Vector<BeDirectAccessStruct> get_Be_DirectAccessSites(String endSite,int direct_len) {
 		Vector<BeDirectAccessStruct> directSites = new Vector<BeDirectAccessStruct>();// 可直达站点向量
-		BeDirectAccessStruct newElement = new BeDirectAccessStruct();
+		BeDirectAccessStruct newElement = null;
 		
 		try {
-			pre_DirectAccess.setString(1, endSite);
-			pre_DirectAccess.registerOutParameter(2, OracleTypes.CURSOR);
-			pre_DirectAccess.execute();
-			rs = ((OracleCallableStatement)pre_DirectAccess).getCursor(2);
+			pre_BeDirectAccess.setString(1, endSite);
+			pre_BeDirectAccess.setInt(2, direct_len);
+			pre_BeDirectAccess.registerOutParameter(3, OracleTypes.CURSOR);
+			pre_BeDirectAccess.execute();
+			rs = ((OracleCallableStatement)pre_BeDirectAccess).getCursor(3);
 			
 			while (rs.next()) {
+				newElement = new BeDirectAccessStruct();
 				newElement.sname = rs.getString("SNAME");
 				newElement.lname = rs.getString("LNAME");
 				newElement.runLeft = rs.getInt("RUNLEFT");
 				directSites.add(newElement);
-				System.out.println(newElement.sname);
 			}
 		} catch (SQLException e) {
 			e.printStackTrace();
 		}
+//		System.out.println("$$$$$$$$$$$$$$$$$$$$$$$$$$$$");
+//		for(int i = 0; i < directSites.size(); i++)
+//			System.out.println(directSites.get(i).sname);
+//		
 		return directSites;
 	}
 	
@@ -209,8 +223,9 @@ public class SelectOperated {
 		OracleBase oracle = new OracleBase();
 		Connection con = oracle.getConnection();
 		SelectOperated aa = new SelectOperated(con);
-		aa.getDirectAccessSites("建设大道双墩");
-		// aa.get_Be_DirectAccessSites("建设大道双墩");
+		//Vector<DirectAccessStruct>  n = aa.getDirectAccessSites("建设大道双墩");
+		
+		//aa.get_Be_DirectAccessSites("汉黄路岱家山", n.size());
 	}
 	
 }

@@ -8,7 +8,7 @@ import java.util.Vector;
  *
  */
 public class TransitSchemeStruct {
-	public Vector<TransitSToEStruct> transitLine = null;// 换乘线路向量
+	public Vector<TransitSToEStruct> transitLine = new Vector<TransitSToEStruct>();// 换乘线路向量
 	public int time = 0;	// 方案所需时间
 	public int distance = 0;	// 方案距离
 }
