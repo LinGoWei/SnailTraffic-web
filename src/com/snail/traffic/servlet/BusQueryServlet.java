@@ -3,14 +3,16 @@ package com.snail.traffic.servlet;
 import java.io.IOException;
 import java.io.PrintWriter;
 
-import javax.servlet.*;
-import javax.servlet.annotation.*;
-import javax.servlet.http.*;
+import javax.servlet.ServletException;
+import javax.servlet.annotation.WebServlet;
+import javax.servlet.http.HttpServlet;
+import javax.servlet.http.HttpServletRequest;
+import javax.servlet.http.HttpServletResponse;
 
-import com.snail.traffic.control.*;
-import com.snail.traffic.persistence.*;
+import net.sf.json.JSONObject;
 
-import net.sf.json.*;
+import com.snail.traffic.control.QueryBus;
+import com.snail.traffic.persistence.InfoStruct;
 
 /**
  * Servlet implementation class BusExchange
@@ -92,12 +94,8 @@ public class BusQueryServlet extends HttpServlet {
 	 * @throws IOException
 	 */
 	protected JSONObject queryBusExchange(String startStation, String destStation) throws IOException {
-		/**
-		 * 
-		 * 
-		 */
-		
-		return null;
+		InfoStruct ret = QueryBus.queryTransit(startStation, destStation);
+		return ret.toJSONObject();
 	}
 	
 	/**
@@ -107,7 +105,7 @@ public class BusQueryServlet extends HttpServlet {
 	 */
 	protected JSONObject queryBusLine(String lineName) throws IOException {
 		InfoStruct ret = QueryBus.queryBusLine(lineName);
-		return ret.toJSON();
+		return ret.toJSONObject();
 	}
 	
 	/**
@@ -117,6 +115,6 @@ public class BusQueryServlet extends HttpServlet {
 	 */
 	protected JSONObject queryBusStation(String stationName) throws IOException {
 		InfoStruct ret = QueryBus.queryBusSite(stationName);
-		return ret.toJSON();
+		return ret.toJSONObject();
 	}
 }

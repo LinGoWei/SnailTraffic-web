@@ -9,8 +9,10 @@ import java.util.Set;
 import java.util.Vector;
 
 import com.snail.traffic.persistence.DirectAccessStruct;
+import com.snail.traffic.persistence.InfoStruct;
 import com.snail.traffic.persistence.OracleBase;
 import com.snail.traffic.persistence.SelectOperated;
+import com.snail.traffic.persistence.TransitStruct;
 
 public class SelectTransit {
 	private SelectOperated selOper = null;
@@ -57,7 +59,7 @@ public class SelectTransit {
 	 * 			最终下车站点
 	 * @return
 	 */
-	public Vector<TransitSchemeStruct> query(String start, String end) {
+	public InfoStruct query(String start, String end) {
 		if (start == null || end == null)
 			return null;
 		
@@ -80,9 +82,11 @@ public class SelectTransit {
 		// 获得起始站点的所有可直达站点
 		directV.relateVector = this.selOper.getDirectAccessSites(start);
 		
+		TransitStruct ret = new TransitStruct();
+		
 		// 若方案数大于3个，即可返回换乘查询结果
 		if (through(schemes, directV, end) >= 3) {
-			return schemes.getAdditionalRoute(con);
+			ret.schemes = schemes.getAdditionalRoute(con);
 		}
 		// 若获取直达方案后，方案数小于3个
 		else {
@@ -92,10 +96,12 @@ public class SelectTransit {
 			Set<String> setIntersection = intersection(directV.getSiteSetFromVector(), be_directV.getSiteSetFromVector());
 			
 			if (onceTransfer(schemes, directV, be_directV, setIntersection) >= 3)
-				return schemes.getAdditionalRoute(con);
+				ret.schemes = schemes.getAdditionalRoute(con);
 			else 
-				return schemes.getAdditionalRoute(con);
+				ret.schemes = schemes.getAdditionalRoute(con);
 		}
+		
+		return (InfoStruct)ret;
 	}
 	
 	/**
@@ -203,7 +209,7 @@ public class SelectTransit {
 	}
 	
 	
-	
+	/*
 	
 	public static void main(String[] args) {
 		OracleBase oracle = new OracleBase();
@@ -215,5 +221,5 @@ public class SelectTransit {
 		
 	}
 	
-    
+    */
 }

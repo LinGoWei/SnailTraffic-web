@@ -121,32 +121,32 @@ public class SelectOperated {
 	 * @return
 	 * 
 	 */
-	public TransitSToEStruct getNextSite(String start, String line) {
-		TransitSToEStruct ste = new TransitSToEStruct();
-		CallableStatement proc = null;
-	      try {
-			proc = con.prepareCall("{ call G7.SELECTNEXTSITE(?,?,?,?,?,?) }");
-		    proc.setString(1, start);
-		    proc.setString(2, line);
-		    
-		    proc.registerOutParameter(3, Types.INTEGER);
-		    proc.registerOutParameter(4, Types.VARCHAR);
-		    proc.registerOutParameter(5, Types.INTEGER);
-		    proc.registerOutParameter(6, Types.INTEGER);
-		    proc.execute();
-		    
-		    ste.isLeft = proc.getInt(3);
-		    ste.endSite = proc.getString(4);	// 下一个站点
-		    ste.time = proc.getInt(5);
-		    ste.distance = proc.getInt(6);
-		    
-		} catch (SQLException e) {
-			e.printStackTrace();
-		}
-		ste.startSite = start;
-		ste.lineName = line;
-		return ste;
-	}
+//	public TransitSToEStruct getNextSite(String start, String line) {
+//		TransitSToEStruct ste = new TransitSToEStruct();
+//		CallableStatement proc = null;
+//	      try {
+//			proc = con.prepareCall("{ call G7.SELECTNEXTSITE(?,?,?,?,?,?) }");
+//		    proc.setString(1, start);
+//		    proc.setString(2, line);
+//		    
+//		    proc.registerOutParameter(3, Types.INTEGER);
+//		    proc.registerOutParameter(4, Types.VARCHAR);
+//		    proc.registerOutParameter(5, Types.INTEGER);
+//		    proc.registerOutParameter(6, Types.INTEGER);
+//		    proc.execute();
+//		    
+//		    ste.isLeft = proc.getInt(3);
+//		    ste.endSite = proc.getString(4);	// 下一个站点
+//		    ste.time = proc.getInt(5);
+//		    ste.distance = proc.getInt(6);
+//		    
+//		} catch (SQLException e) {
+//			e.printStackTrace();
+//		}
+//		ste.startSite = start;
+//		ste.lineName = line;
+//		return ste;
+//	}
 	
 	/**
 	 * 获取起始站点的可直达站点向量
