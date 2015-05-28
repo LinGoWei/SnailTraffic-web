@@ -1,5 +1,7 @@
 package com.snail.traffic.control;
 
+import java.util.Vector;
+
 /**
  * 交通的上车站点到下车站点
  * @author weiliu
@@ -8,6 +10,7 @@ package com.snail.traffic.control;
 public class TransitSToEStruct {
 	public String startSite = null;	// 上车站点名	
 	public String endSite	= null;	// 下车站点名
+	public Vector<String> route = new Vector<String>();	// 路径
 	public int isLeft		= 0;	// 是否左线
 	public String lineName	= null;	// 线路名
 	public int time 		= 0;

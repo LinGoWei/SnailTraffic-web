@@ -14,9 +14,11 @@ import com.snail.traffic.persistence.SelectOperated;
 
 public class SelectTransit {
 	private SelectOperated selOper = null;
+	private Connection con = null;
 	
 	// 构造函数
 	public SelectTransit(Connection con) {
+		this.con = con;
 		this.selOper = new SelectOperated(con);
 	}
 	
@@ -67,7 +69,7 @@ public class SelectTransit {
 		if (start.equals(end)) 
 			return null;
 		
-		Vector<TransitSchemeStruct> schemes = new Vector<TransitSchemeStruct>();// 方案向量
+		TotalTimePriorityQueue schemes = new TotalTimePriorityQueue();// 方案向量
 		
 		DirectVectorBase directV = new DirectVector();
 		DirectVectorBase be_directV = new Be_DirectVector();
@@ -80,7 +82,7 @@ public class SelectTransit {
 		
 		// 若方案数大于3个，即可返回换乘查询结果
 		if (through(schemes, directV, end) >= 3) {
-			return schemes;
+			return schemes.getAdditionalRoute(con);
 		}
 		// 若获取直达方案后，方案数小于3个
 		else {
@@ -90,9 +92,9 @@ public class SelectTransit {
 			Set<String> setIntersection = intersection(directV.getSiteSetFromVector(), be_directV.getSiteSetFromVector());
 			
 			if (onceTransfer(schemes, directV, be_directV, setIntersection) >= 3)
-				return schemes;
+				return schemes.getAdditionalRoute(con);
 			else 
-				return schemes;
+				return schemes.getAdditionalRoute(con);
 		}
 	}
 	
@@ -107,7 +109,7 @@ public class SelectTransit {
 	 * @return size
 	 * 			方案数
 	 */
-	private int through(Vector<TransitSchemeStruct> allScheme, DirectVectorBase direct, String end) {
+	private int through(TotalTimePriorityQueue allScheme, DirectVectorBase direct, String end) {
 		TimePriorityQueue transitVecter = direct.getVectorTo(end); // 获得直达方案
 		TransitSchemeStruct newScheme = null;	// 换乘方案元素
 		TransitSToEStruct stoe = null;
@@ -136,19 +138,6 @@ public class SelectTransit {
 	 * @return
 	 */
 	private Set<String> intersection(Set<String> setA, Set<String> setB) {
-//		String ss = "";
-//		Iterator<String> iterAa = setA.iterator();
-//        while (iterAa.hasNext()) {
-//            ss = iterAa.next();
-//            System.out.println(ss);
-//        }
-//        System.out.println("++++++++++++++++++++++");
-//		Iterator<String> iterB = setB.iterator();
-//        while (iterB.hasNext()) {
-//            ss = iterB.next();
-//            System.out.println(ss);
-//        }
-//        System.out.println("===========");
 		Set<String> setIntersection = new HashSet<String>();
         String s = "";
         Iterator<String> iterA = setA.iterator();
@@ -175,7 +164,7 @@ public class SelectTransit {
 	 * 			交集（可换乘站点）
 	 * @return 当前方案数
 	 */
-	private int onceTransfer(Vector<TransitSchemeStruct> allScheme
+	private int onceTransfer(TotalTimePriorityQueue allScheme
 							, DirectVectorBase direct
 							, DirectVectorBase be_direct
 							, Set<String> interset) {
@@ -220,7 +209,10 @@ public class SelectTransit {
 		OracleBase oracle = new OracleBase();
 		Connection con = oracle.getConnection();
 		SelectTransit a = new SelectTransit(con);
-		a.query("建设大道双墩", "汉黄路岱家山");
+		Vector<TransitSchemeStruct> v = a.query("建设大道双墩", "汉黄路岱家山");
+		TransitSchemeStruct tt = null;
+		TransitSToEStruct rr = null;
+		
 	}
 	
     

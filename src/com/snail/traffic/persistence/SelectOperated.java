@@ -31,7 +31,8 @@ public class SelectOperated {
 	private PreparedStatement pre_viewSiteLine = null;	// 查询站点线路视图预编译
 	private PreparedStatement pre_viewLineSite = null;	// 查询线路站点视图预编译
 	private CallableStatement pre_DirectAccess = null;	// 直达站点查询预编译
-	private CallableStatement pre_BeDirectAccess = null;	// 直达站点查询预编译
+	private CallableStatement pre_BeDirectAccess = null;// 直达站点查询预编译
+	private CallableStatement pre_StartToEnd = null;	// 起点到中转站点序列 
 	
 	private ResultSet rs = null;
 	
@@ -52,6 +53,7 @@ public class SelectOperated {
 			pre_viewLineSite = con.prepareStatement(viewLineSite);	
 			pre_DirectAccess = con.prepareCall("BEGIN DIRECTACCESS(?, ?); END;");
 			pre_BeDirectAccess = con.prepareCall("BEGIN BEDIRECTACCESS(?, ?, ?); END;");
+			pre_StartToEnd = con.prepareCall("BEGIN ROUTE(?, ?, ?, ?, ?); END;");
 			
 		} catch (SQLException e) {
 			e.printStackTrace();
@@ -211,11 +213,34 @@ public class SelectOperated {
 		} catch (SQLException e) {
 			e.printStackTrace();
 		}
-//		System.out.println("$$$$$$$$$$$$$$$$$$$$$$$$$$$$");
-//		for(int i = 0; i < directSites.size(); i++)
-//			System.out.println(directSites.get(i).sname);
-//		
 		return directSites;
+	}
+	
+	public Vector<String> getRoute(String start, String end, String line, int runleft) {
+		Vector<String> route = new Vector<String>();
+		String newElement = null;
+		try {
+			pre_StartToEnd.setString(1, start);
+			pre_StartToEnd.setString(2, end);
+			pre_StartToEnd.setString(3, line);
+			pre_StartToEnd.setInt(4, runleft);
+			pre_StartToEnd.registerOutParameter(5, OracleTypes.CURSOR);
+			
+			pre_StartToEnd.execute();
+			rs = ((OracleCallableStatement)pre_StartToEnd).getCursor(5);
+	
+			while (rs.next()) {
+				newElement = new String();
+				newElement = rs.getString("SNAME");
+				route.add(newElement);
+			}
+		} catch (SQLException e) {
+			e.printStackTrace();
+		}
+//		for(int i = 0; i < route.size(); i++)
+//			System.out.println(route.get(i));
+//		
+		return route;
 	}
 	
 	
@@ -224,7 +249,7 @@ public class SelectOperated {
 		Connection con = oracle.getConnection();
 		SelectOperated aa = new SelectOperated(con);
 		//Vector<DirectAccessStruct>  n = aa.getDirectAccessSites("建设大道双墩");
-		
+		aa.getRoute("建设大道双墩", "解放大道仁寿路", "1路", 1);
 		//aa.get_Be_DirectAccessSites("汉黄路岱家山", n.size());
 	}
 	
