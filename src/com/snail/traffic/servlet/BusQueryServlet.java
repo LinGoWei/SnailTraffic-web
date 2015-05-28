@@ -3,16 +3,14 @@ package com.snail.traffic.servlet;
 import java.io.IOException;
 import java.io.PrintWriter;
 
-import javax.servlet.ServletException;
-import javax.servlet.annotation.WebServlet;
-import javax.servlet.http.HttpServlet;
-import javax.servlet.http.HttpServletRequest;
-import javax.servlet.http.HttpServletResponse;
+import javax.servlet.*;
+import javax.servlet.annotation.*;
+import javax.servlet.http.*;
 
-import net.sf.json.JSONObject;
+import com.snail.traffic.control.*;
+import com.snail.traffic.persistence.*;
 
-import com.snail.traffic.control.QueryBus;
-import com.snail.traffic.persistence.InfoStruct;
+import net.sf.json.*;
 
 /**
  * Servlet implementation class BusExchange
@@ -28,12 +26,6 @@ public class BusQueryServlet extends HttpServlet {
         super();
         // TODO Auto-generated constructor stub
     }
-
-	/**
-	 * @see HttpServlet#doGet(HttpServletRequest request, HttpServletResponse response)
-	 */
-	protected void doGet(HttpServletRequest request, HttpServletResponse response) throws ServletException, IOException {
-	}
 
 	/**
 	 * @see HttpServlet#doPost(HttpServletRequest request, HttpServletResponse response)
