@@ -2,13 +2,13 @@
 
 import java.sql.Connection;
 
-import com.snail.traffic.persistence.admin.AdminLineToSiteTable;
-import com.snail.traffic.persistence.admin.AdminLineTable;
-import com.snail.traffic.persistence.admin.AdminNextSiteTable;
-import com.snail.traffic.persistence.admin.AdminSiteToLineTable;
-import com.snail.traffic.persistence.admin.AdminSiteTable;
-import com.snail.traffic.persistence.select.SelectOperated;
 import com.snail.traffic.container.data.TwoStringStruct;
+import com.snail.traffic.persistence.admin.AdminLineTable;
+import com.snail.traffic.persistence.admin.AdminLineToSiteTable;
+import com.snail.traffic.persistence.admin.AdminNextSiteTable;
+import com.snail.traffic.persistence.admin.AdminSiteTable;
+import com.snail.traffic.persistence.admin.AdminSiteToLineTable;
+import com.snail.traffic.persistence.select.SelectSiteToLineView;
 
 	/*
 	 * 1.从前端获取线路名称lname
@@ -26,7 +26,8 @@ public class AddLine {
 	
 	private AdminSiteTable adsite;		// 站点表管理对象
 	private AdminLineToSiteTable alinesite;// 线路站点表管理对象
-	private SelectOperated seloper;		// 视图查询对象
+	//private SelectOperated seloper;		// 视图查询对象
+	private SelectSiteToLineView stl;
 	private AdminNextSiteTable adnextsite;// 下一站点表管理对象
 	private TwoStringStruct tls;		//
 	
@@ -35,7 +36,8 @@ public class AddLine {
 		adsiteline 	=  new AdminSiteToLineTable(con);
 		adsite 		= new AdminSiteTable(con);            //站点表对象
 		alinesite 	=  new AdminLineToSiteTable(con);
-		seloper 	=  new SelectOperated(con);
+		//seloper 	=  new SelectOperated(con);
+		stl = new SelectSiteToLineView(con);
 		adnextsite 	= new AdminNextSiteTable(con);
 	}
 	
@@ -187,7 +189,8 @@ public class AddLine {
 			else
 				sidseq += ("," + sid);
 			
-			tls = seloper.getSiteLineSeq(array[i]);    //根据站点名获取左行和右行线路id字符串
+			//tls = seloper.getSiteLineSeq(array[i]);    //根据站点名获取左行和右行线路id字符串
+			tls = stl.getSeq(array[i]);
 			lineseq = tls.get(isleft);	
 			lineseq += ("," + lid);   //更新站点线路表
 			

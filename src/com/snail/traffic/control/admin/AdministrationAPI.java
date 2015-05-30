@@ -7,8 +7,8 @@ import java.util.Map;
 import java.util.Map.Entry;
 
 import com.snail.traffic.container.data.SiteToLineStruct;
-import com.snail.traffic.persistence.admin.AdminSiteToLineTable;
 import com.snail.traffic.persistence.OracleBase;
+import com.snail.traffic.persistence.admin.AdminSiteToLineTable;
 
 public class AdministrationAPI {
 	private static OracleBase oracle = new OracleBase();
@@ -34,7 +34,7 @@ public class AdministrationAPI {
 			int key = (int)entry.getKey();
 
 			SiteToLineStruct val = (SiteToLineStruct)entry.getValue();
-			slt.addKeyToValue(key, val.getALlid(), val.getARlid());	
+			slt.addKeyToValue(key, val.getLeftLid(), val.getRightLid());	
 		}
 		System.out.print("导入完成");
 		return true;

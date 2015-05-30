@@ -7,8 +7,9 @@ import com.snail.traffic.persistence.admin.AdminLineTable;
 import com.snail.traffic.persistence.admin.AdminNextSiteTable;
 import com.snail.traffic.persistence.admin.AdminSiteToLineTable;
 import com.snail.traffic.persistence.admin.AdminSiteTable;
+import com.snail.traffic.persistence.select.SelectLineToSiteView;
+import com.snail.traffic.persistence.select.SelectSiteToLineView;
 import com.snail.traffic.container.info.InfoLineStruct;
-import com.snail.traffic.persistence.select.SelectOperated;
 import com.snail.traffic.container.data.TwoStringStruct;
 
 /*
@@ -23,7 +24,9 @@ public class UpdateLine{
 	private AdminSiteToLineTable aslt;
 	private AdminSiteTable ast;
 	private AdminLineToSiteTable alst;//线路站点表对象
-	private SelectOperated so;
+	//private SelectOperated so;
+	private SelectLineToSiteView siteView;
+	private SelectSiteToLineView lineView;
 	private AdminNextSiteTable anst;
 	private TwoStringStruct tlsLine,tlsSite;
 	
@@ -36,7 +39,9 @@ public class UpdateLine{
 		aslt =  new AdminSiteToLineTable(con);
 		ast = new AdminSiteTable(con);            //站点表对象
 		alst =  new AdminLineToSiteTable(con);
-		so =  new SelectOperated(con);
+		//so =  new SelectOperated(con);
+		siteView = new SelectLineToSiteView(con);
+		lineView = new SelectSiteToLineView(con);
 		anst = new AdminNextSiteTable(con);
 		tlsLine = new TwoStringStruct();
 		tlsSite = new TwoStringStruct();
@@ -52,8 +57,8 @@ public class UpdateLine{
 	/*前端需要根据是否true和false来进行显示*/
 	public boolean confirmUpdateLineInfo(String linename,
 	                                    String newname,
-										String linterval,
-										String lfirstopen,
+        				    String linterval,
+					    String lfirstopen,
 										String llastopen,
 										String lfirstclose,
 										String llastclose, 
@@ -61,8 +66,8 @@ public class UpdateLine{
 										String lcardprice,
 										String lcompany,
 										String remark,
-										String[] leftSite,  //左行站点组成的数组
-										String[] rightSite){
+    										String[] leftSite,  //左行站点组成的数组
+    										String[] rightSite){
 										
 		if(newname == null || newname.equals("")){
 			return false;
@@ -75,8 +80,8 @@ public class UpdateLine{
 		
 		int lid = alt.getId(linename);	
 		
-		tlsSite = so.getLineSiteSeq(linename);
-		
+		//tlsSite = so.getLineSiteSeq(linename);
+		tlsSite = siteView.getSeq(linename);
 		/*更新站点线路表*/
 		updateSiteLine(lid,leftSite,true);
 		updateSiteLine(lid,rightSite,false);
@@ -105,7 +110,8 @@ public class UpdateLine{
 		for(int i = 0 ; i < site.length ; i++){
 			
 			int sid = ast.getId(site[i]);
-			tlsLine = so.getSiteLineSeq(site[i]);
+			//tlsLine = so.getSiteLineSeq(site[i]);
+			tlsLine = lineView.getSeq(site[i]);
 			String lidseqBefore = tlsLine.get(isLeft);           //获取更新前站点所对应的线路组成的序列
 			String lidStr = lidseqBefore;
 			String lidLeftBefore =  tlsLine.get(true);
@@ -153,8 +159,8 @@ public class UpdateLine{
 		//判断之前的站点id是否存在于新站点id序列中
 		for(int i = 0; i < sidBefore.length; i++){
 			int sid = Integer.parseInt(sidBefore[i]);
-			tlsLine = so.getSiteLineSeq(ast.getName(sid));   //得到该站点对应的线路id组成的字符串
-			
+			//tlsLine = so.getSiteLineSeq(ast.getName(sid));   //得到该站点对应的线路id组成的字符串
+			tlsLine = lineView.getSeq(ast.getName(sid));
 			String lidseqBefore = tlsLine.get(isLeft);           //获取更新前站点所对应的线路组成的序列
 			String lidStr = lidseqBefore;
 			String[] temp = lidStr.split(",");
@@ -279,7 +285,8 @@ public class UpdateLine{
 	
 	private void updateLineSite(int lid,String[] site,boolean isLeft){
 		
-		tlsSite = so.getLineSiteSeq(alt.getName(lid));        //获得线路所对应的站点序列
+		//tlsSite = so.getLineSiteSeq(alt.getName(lid));        //获得线路所对应的站点序列
+	        tlsSite = siteView.getSeq(alt.getName(lid));
 		String sidLeft = tlsSite.get(true);
 		String sidRight = tlsSite.get(false);
 		String sidseq = "";
