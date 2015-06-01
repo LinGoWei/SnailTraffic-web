@@ -4,6 +4,7 @@
     <file url="file://$PROJECT_DIR$/src/com/snail/traffic/container/transfer/BaseTransitStruct.java" charset="UTF-8" />
     <file url="file://$PROJECT_DIR$/src/com/snail/traffic/container/transfer/TransitSection.java" charset="UTF-8" />
     <file url="file://$PROJECT_DIR$/src/com/snail/traffic/control/query/SelectBusLine.java" charset="GBK" />
+    <file url="file://$PROJECT_DIR$/src/com/snail/traffic/control/query/SelectTransfer.java" charset="GBK" />
     <file url="file://$PROJECT_DIR$/src/com/snail/traffic/persistence/OracleBase.java" charset="UTF-8" />
     <file url="file://$PROJECT_DIR$/src/com/snail/traffic/persistence/admin/AdminLineTable.java" charset="GBK" />
     <file url="file://$PROJECT_DIR$/src/com/snail/traffic/persistence/admin/AdminLineToSiteTable.java" charset="UTF-8" />

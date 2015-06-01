@@ -14,43 +14,47 @@ public class SelectTransfer {
 	Connection con = null;
 	SelectAccessProcedure selAccess = null;
 
-	// ¹¹Ôìº¯Êı
+	/**
+	 * constructor
+	 * @param con
+	 */
 	public SelectTransfer(Connection con) {
 		this.con = con;
 	}
 
 	/**
-	 * »»³Ë²éÑ¯
-	 * Ê×ÏÈ¼ì²éÊÇ·ñÖ±´ï
-	 * ¼ì²éÊÇ·ñ´æÔÚÒ»´Î»»³Ë
+	 * æ¢ä¹˜æŸ¥è¯¢
+	 * é¦–å…ˆæ£€æŸ¥æ˜¯å¦ç›´è¾¾
+	 * æ£€æŸ¥æ˜¯å¦å­˜åœ¨ä¸€æ¬¡æ¢ä¹˜
 	 * @param start
-	 * 			ÆğÊ¼ÉÏ³µÕ¾µã
+	 * 	èµ·å§‹ä¸Šè½¦ç«™ç‚¹
 	 * @param end
-	 * 			×îÖÕÏÂ³µÕ¾µã
+	 * 	æœ€ç»ˆä¸‹è½¦ç«™ç‚¹
 	 * @return
 	 */
 	public InfoStruct query(String start, String end) {
 		if (start == null || end == null)
 			return null;
 
-		// µ±ÆğÊ¼Õ¾µãÓëÖÕÖ¹Õ¾µãÖØ¸´Ê±
+		// å½“èµ·å§‹ç«™ç‚¹ä¸ç»ˆæ­¢ç«™ç‚¹é‡å¤æ—¶
 		if (start.equals(end)) 
 			return null;
 		
-		TotalTimePriorityQueue allSchemes = new TotalTimePriorityQueue();// ×îÖÕ·½°¸ÓÅÏÈ¶ÓÁĞ
+		TotalTimePriorityQueue allSchemes = new TotalTimePriorityQueue();// é”Ÿæ–¤æ‹·é”Ÿç§¸å‡¤æ‹·é”Ÿæ–¤æ‹·é”Ÿæ–¤æ‹·é”Ÿé¥ºè®¹æ‹·é”Ÿæ–¤æ‹·
 		selAccess = new SelectDirectAccessProcedure(con);
 
-		BaseAccessVector directV = new DirectAccessVector();	// Ö±´ïÕ¾µã¼¯ºÏ
+		BaseAccessVector directV = new DirectAccessVector();	// ç›´é”Ÿæ–¤æ‹·ç«™é”Ÿå§é›†é”Ÿæ–¤æ‹·
 		directV.relateSite = start;
 		directV.relateVector = selAccess.getAccessSites(start);
 
 		InfoTransferStruct ret = new InfoTransferStruct();
-		
-		// Èô·½°¸Êı´óÓÚ3¸ö
+		ret.start = start;
+		ret.end = end;
+
+		// è‹¥æ–¹æ¡ˆæ•°å¤§äº3ä¸ª
 		if (through(allSchemes, directV, end) >= 3) {
-			System.out.println("¿ÉÖ±´ïÏßÂ·´ïÈıÌõ");
+			System.out.println("3 lines");
 		}
-		// Èô»ñÈ¡Ö±´ï·½°¸ºó£¬·½°¸ÊıĞ¡ÓÚ3¸ö
 		else {
 			BaseAccessVector be_directV = new BeDirectAccessVector();
 			selAccess = new SelectBeDirectAccessProcedure(con);
@@ -59,41 +63,40 @@ public class SelectTransfer {
 			Set<String> setIntersection = intersection(directV.getSiteSetFromVector(), be_directV.getSiteSetFromVector());
 			
 			if (onceTransfer(allSchemes, directV, be_directV, setIntersection) >= 3)
-				System.out.println("Ö±´ïÓë¿ÉÒ»´Î»»³ËµÄÏßÂ·´ïÈıÌõ");
+				System.out.println("has 3 lines");
 			else
-				System.out.println("¿ªÕ¹¶ş´Î»»³ËÔËËã");
+				System.out.println("has not 3 lines");
 		}
 		ret.schemes = getPriorityRoute(allSchemes);
 		return ret;
 	}
 	
 	/**
-	 * ¸ù¾İÄ¿±êÕ¾µã»ñÈ¡Ö±´ï·½°¸
-	 * Ò»¸öÖ±´ï³Ë³µ·½°¸¾ÍÊÇÒ»¸ö·½°¸
+	 * æ ¹æ®ç›®æ ‡ç«™ç‚¹è·å–ç›´è¾¾æ–¹æ¡ˆ
+	 * ä¸€ä¸ªç›´è¾¾ä¹˜è½¦æ–¹æ¡ˆå°±æ˜¯ä¸€ä¸ªæ–¹æ¡ˆ
 	 * @param Scheme
-	 * 			·½°¸ÏòÁ¿
+	 * 			æ–¹æ¡ˆå‘é‡
 	 * @param vector
-	 * 			ÆğÊ¼Õ¾µãÏòÁ¿
+	 * 			èµ·å§‹ç«™ç‚¹å‘é‡
 	 * @param end
-	 * 			Ä¿±êÕ¾µã
+	 * 			ç›®æ ‡ç«™ç‚¹
 	 * @return size
-	 * 			·½°¸Êı
+	 * 			æ–¹æ¡ˆæ•°
 	 */
 	private int through(TotalTimePriorityQueue allScheme, BaseAccessVector direct, String end) {
-		TimePriorityQueue transitVector = direct.getVectorTo(end); // »ñµÃÄÜÖ±´ïÖÕµãµÄËùÓĞÏßÂ·
+		TimePriorityQueue transitVector = direct.getVectorTo(end); // é”Ÿæ–¤æ‹·é”Ÿæ–¤æ‹·é”Ÿè¡—æ†‹æ‹·é”Ÿæ–¤æ‹·ç›é”Ÿæ–¤æ‹·é”Ÿæ–¤æ‹·é”Ÿæ–¤æ‹·é”Ÿæ–¤æ‹·è·¯
 		TransitScheme newScheme = null;
 		TransitSection section = null;
 		int size = transitVector.size();
 
 		for (int i = 0; i < size; i++) {
 			newScheme = new TransitScheme();
-			section = transitVector.poll();	// »ñµÃÓÅÏÈ¶ÓÁĞÖĞµÄÊ±¼ä×îÓÅÔªËØ
+			section = transitVector.poll();	// é”Ÿæ–¤æ‹·é”Ÿæ–¤æ‹·é”Ÿæ–¤æ‹·æ¦·é”Ÿæ–¤æ‹·é”Ÿæ–¤æ‹·æ¢°é”Ÿç»æ†‹æ‹·é”Ÿæ–¤æ‹·é”Ÿæ–¤æ‹·é”Ÿçš†îæ‹·é”Ÿï¿½
 			newScheme.transitSections.add(section);
 			newScheme.time = section.time;
 			newScheme.distance = section.distance;
 			allScheme.add(newScheme);
 		}
-		// System.out.println("Ö±´ï£º" + allScheme.size());
 		return allScheme.size();
 	}
 
@@ -119,18 +122,18 @@ public class SelectTransfer {
 				section.route = selRoute.getRoute(section.startSite, section.endSite, section.lineName, section.isLeft);
 			}
 			v.add(scheme);
-			if (i == 4)    // ÓĞ5¸ö·½°¸¼´½áÊø
-				break;
+			if (i == 4)
+			    break;
 		}
 		return v;
 	}
 
 	/**
-	 * ¶ÔÁ½¸ö¼¯ºÏÇó½»¼¯(×¼È·)
+	 * å¯¹ä¸¤ä¸ªé›†åˆæ±‚äº¤é›†(å‡†ç¡®)
 	 * @param setA
-	 * 			A¼¯ºÏ
+	 * 			Aé›†åˆ
 	 * @param setB
-	 * 			B¼¯ºÏ
+	 * 			Bé›†åˆ
 	 * @return
 	 */
 	private Set<String> intersection(Set<String> setA, Set<String> setB) {
@@ -146,28 +149,28 @@ public class SelectTransfer {
 	}
 
 	/**
-	 * Ò»´Î»»³Ë²éÑ¯
+	 * ä¸€æ¬¡æ¢ä¹˜æŸ¥è¯¢
 	 * @param allScheme
-	 * 			ËùÓĞ·½°¸
+	 * 			æ‰€æœ‰æ–¹æ¡ˆ
 	 * @param direct
-	 * 			ÆğÊ¼Õ¾µãÖ±´ïÕ¾µã
+	 * 			èµ·å§‹ç«™ç‚¹ç›´è¾¾ç«™ç‚¹
 	 * @param be_direct
-	 * 			ÖÕÖ¹Õ¾µã±»Ö±´ïÕ¾µã
+	 * 			ç»ˆæ­¢ç«™ç‚¹è¢«ç›´è¾¾ç«™ç‚¹
 	 * @param interset
-	 * 			½»¼¯£¨¿É»»³ËÕ¾µã£©
-	 * @return µ±Ç°·½°¸Êı
+	 * 			äº¤é›†ï¼ˆå¯æ¢ä¹˜ç«™ç‚¹ï¼‰
+	 * @return å½“å‰æ–¹æ¡ˆæ•°
 	 */
 	private int onceTransfer(TotalTimePriorityQueue allScheme
-							, BaseAccessVector direct
-							, BaseAccessVector be_direct
-							, Set<String> interSet) {
-		TransitScheme newScheme 				= null;	// ĞÂµÄ·½°¸
-		TimePriorityQueue firstSectionQueue 	= null;	// µÚÒ»¶Î¹«½»µÄËùÓĞ¿ÉÑ¡·½°¸ÓÅÏÈ¶ÓÁĞ
-		TimePriorityQueue secondSectionQueue 	= null;	// µÚ¶ş¶Î¹«½»µÄËùÓĞ¿ÉÑ¡·½°¸ÓÅÏÈ¶ÓÁĞ
-		TransitSection firstSection 			= null;	// µÚÒ»¶Î¹«½»
-		TransitSection secondSection 			= null;	// µÚ¶ş¶Î¹«½»
+				, BaseAccessVector direct
+				, BaseAccessVector be_direct
+				, Set<String> interSet) {
+		TransitScheme newScheme 		= null;	// new scheme
+		TimePriorityQueue firstSectionQueue 	= null;	
+		TimePriorityQueue secondSectionQueue 	= null;	
+		TransitSection firstSection 		= null;
+		TransitSection secondSection 		= null;
 
-		// Ñ­»·¿É»»³ËÕ¾µã
+		// å¾ªç¯å¯æ¢ä¹˜ç«™ç‚¹
 		for (String s: interSet) {
 			System.out.println(s);
 
@@ -179,7 +182,6 @@ public class SelectTransfer {
 			System.out.println(firstSection.lineName);
 			System.out.println(secondSection.lineName);
 			
-			// ¹¹ÔìĞÂ·½°¸ÔªËØ
 			newScheme = new TransitScheme();
 			newScheme.transitSections.add(firstSection);
 			newScheme.transitSections.add(secondSection);
@@ -187,17 +189,26 @@ public class SelectTransfer {
 			newScheme.distance = firstSection.distance + secondSection.distance;
 			allScheme.add(newScheme);
 		}
-		System.out.println("Ö±´ï+Ò»´Î»»³Ë" + allScheme.size());
+		System.out.println("ç›´è¾¾+ä¸€æ¬¡æ¢ä¹˜" + allScheme.size());
 		return allScheme.size();
 	}
 
-	/*
+	/**
+	 * äºŒæ¬¡æ¢ä¹˜
+	 * @return
+	 */
+	private int twiceTransfer(TotalTimePriorityQueue allScheme
+				, ) {
+	    
+	    
+	}
 	
+	/*
 	public static void main(String[] args) {
 		OracleBase oracle = new OracleBase();
 		Connection con = oracle.getConnection();
 		SelectTransfer a = new SelectTransfer(con);
-		Vector<TransitScheme> v = a.query("½¨Éè´óµÀË«¶Õ", "ºº»ÆÂ·á·¼ÒÉ½");
+		Vector<TransitScheme> v = a.query("é”Ÿæ–¤æ‹·é”Ÿæ–¤æ‹·é”Ÿæ–¤æ‹·åŒé”Ÿæ–¤æ‹·", "é”Ÿæ–¤æ‹·é”Ÿæ–¤æ‹·è·¯å²±ç¡·æ‹·å±±");
 		TransitScheme tt = null;
 		TransitSection rr = null;
 		
