@@ -40,12 +40,15 @@ function showBusExchangeResult (json) {
     var scheme;
     var section;
     var str;
+    var route = [];
     
     for (var i = 0; i < json.schemes.length; i++) {
     	scheme = json.schemes[i];
     	str = '';
     	for (var j = 0; j < scheme.sections.length; j++) {
     		section = scheme.sections[j];
+    		route.concat(section.route);
+    		
     		str += newSchemeItem(section.name, section.start, section.end);
     	}
     	
@@ -77,7 +80,7 @@ function showBusLineResult(json) {
         rightList.append('<li>&nbsp;</li>');
     }
 
-    map.clearOverlays();
+    mapClearOverlays();
     drawBusLine(json.title, true);
 }
 
@@ -105,7 +108,7 @@ function showBusStationResult(json) {
         rightList.append('<li>&nbsp;</li>');
     }
 
-    map.clearOverlays();
+    mapClearOverlays();
     drawBusStation(json.title);
 }
 
@@ -207,7 +210,7 @@ $(function () {
     // Ajax form submit
     $('form').bind('submit', function () {
         var data = packFormDataToJson(this);
-        mapClearOverlay();
+        mapClearOverlays();
         ajaxSubmit(
             this
             , data
@@ -267,8 +270,6 @@ $(function () {
     	});
     	
     	list.push($body.find('.l-ex-si-stop').last().text());
-
-        map.clearOverlays();
     	drawBusTransit(list);
     });
 });

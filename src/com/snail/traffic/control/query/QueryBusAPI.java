@@ -52,10 +52,12 @@ public class QueryBusAPI {
 		return selectTran.query(start.trim(), end.trim());
 	}
 	
+	/*
 	public static void main(String[] args) {
 	    // InfoStruct v = queryBusSite("建设大道双墩");
 	    // InfoStruct v = queryBusLine("1路");
 	    // InfoStruct v = queryTransfer("建设大道双墩", "汉黄路岱家山");
 	    InfoStruct v = queryTransfer("东园西路佛祖岭", "丰顺路天顺园小区");
 	}
+	*/
 }
