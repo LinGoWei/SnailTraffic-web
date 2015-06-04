@@ -23,14 +23,18 @@ function showBusExchangeResult (json) {
     var $template_root = $('#bus-exchange-scheme-template');
     var $template_item_root = $('#bus-exchange-scheme-part-template');
     
-    var newSchemeItem = function (line, start, end) {
+    var newSchemeItem = function (line, start, end /*, route*/) {
     	var str = $template_item_root.html();
-    	return str.replace('{lineName}', line).replace('{start}', start).replace('{end}', end);
+    	return str.replace('{lineName}', line)
+    		.replace('{start}', start)
+    		.replace('{end}', end);
+    		//.replace('{routeString}', route.join(','));
     };
 
     var newScheme = function (name, scheme) {
     	var str = $template_root.html();
-    	return str.replace('{schemeName}', name).replace('{listItem}', scheme);
+    	return str.replace('{schemeName}', name)
+    		.replace('{listItem}', scheme);
     };
 
     $('.list-left-wrap').css('width', '100%');
@@ -47,9 +51,7 @@ function showBusExchangeResult (json) {
     	str = '';
     	for (var j = 0; j < scheme.sections.length; j++) {
     		section = scheme.sections[j];
-    		route.concat(section.route);
-    		
-    		str += newSchemeItem(section.name, section.start, section.end);
+    		str += newSchemeItem(section.name, section.start, section.end /*, section.route */);
     	}
     	
     	$list.append(newScheme(scheme.title, str));
@@ -243,7 +245,7 @@ $(function () {
                     setSidebarVisibility(false);
                 }
             }
-            , 5000
+            , 100000
             , function (XMLHttpRequest, textStatus, errorThrown) {
                 closeSidebar();
                 setSidebarVisibility(false);
@@ -264,12 +266,14 @@ $(function () {
     	$('.line-exchange-scheme-body').hide();
     	$body.toggle();
     	
-    	var list = [];
-    	$body.find('.l-ex-si-start').each(function (i, val) {
-    		list.push(val.innerText);
-    	});
+    	var route = [];
+    	//route = $body.find('.route-string').text().split(',');
+    	var lines = $body.find('.l-ex-si-start');
+    	for (var i = 0; i < lines.length; i++) {
+    		route.push(lines[i].innerText);
+    	}
     	
-    	list.push($body.find('.l-ex-si-stop').last().text());
-    	drawBusTransit(list);
+    	route.push($body.find('.l-ex-si-stop').last().text());
+    	drawBusTransit(route);
     });
 });

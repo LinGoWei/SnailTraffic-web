@@ -40,6 +40,12 @@ function drawBusTransit(route) {
     
     for (i; i + 1 < route.length; i++) {
     	transit.search(route[i], route[i + 1]);
+    	var myIcon = new BMap.Icon("http://developer.baidu.com/map/jsdemo/img/location.gif", new BMap.Size(14,23));
+    	//设置起终点图标
+    	transit.setMarkersSetCallback(function(result){
+    		result[0].marker.setIcon(myIcon);
+    		result[1].marker.setIcon(myIcon);
+    	});
     }
 }
 
